@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Para ti, mi amor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Figtree:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C1121F;
+    --red-hi: #DC2637;
+    --red-lo: #97091A;
+    --wine: #5A0812;
+    --wine-lo: #3A040B;
+    --scene-white: #FFF9F7;
+    --blush: #FFD9DE;
+    --ink: #4A0B14;
+    --display: "Fraunces", Georgia, "Times New Roman", serif;
+    --body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --hand: "Caveat", "Segoe Script", "Bradley Hand", cursive;
+    --focus: #FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --scene-white: #2A0811;
+      --ink: #FFEDEE;
+      --blush: #5A1622;
+    }
+  }
+  :root[data-theme="dark"] {
+    --scene-white: #2A0811;
+    --ink: #FFEDEE;
+    --blush: #5A1622;
+  }
+
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html, body { height: 100%; margin: 0; overflow: hidden; }
+  body {
+    background-color: var(--wine);
+    color: #fff;
+    font-family: var(--body);
+    font-size: 1.05rem;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+  h1, h2, p { margin: 0; }
+  h1, h2 { font-family: var(--display); font-weight: 500; font-style: italic; line-height: 1.08; letter-spacing: -0.015em; text-wrap: balance; }
+  h1 { font-size: clamp(2.3rem, 9vw, 4.2rem); max-width: 14ch; }
+  h2 { font-size: clamp(2rem, 7.5vw, 3.6rem); max-width: 17ch; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 10px; }
+  .s-white :focus-visible { outline-color: var(--red); }
+
+  #app { position: fixed; inset: 0; }
+  #petals { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+
+  /* ---------- Escenas ---------- */
+  .scene { position: absolute; inset: 0; display: none; overflow: hidden; }
+  .scene.active { display: block; }
+  .s-red   { background: radial-gradient(120% 90% at 50% 0%, var(--red-hi) 0%, var(--red) 55%, var(--red-lo) 100%); color: #fff; }
+  .s-white { background: radial-gradient(120% 80% at 50% 100%, var(--blush) 0%, var(--scene-white) 60%); color: var(--ink); }
+  .s-wine  { background: radial-gradient(110% 80% at 50% 30%, #7A0A1A 0%, var(--wine) 50%, var(--wine-lo) 100%); color: #fff; }
+  .s-gate  { background: transparent; color: #fff; }
+
+  .wrap {
+    position: absolute; inset: 0; overflow-y: auto;
+    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.2rem;
+    padding: calc(env(safe-area-inset-top, 0px) + 3.6rem) 1.5rem calc(env(safe-area-inset-bottom, 0px) + 3.8rem);
+  }
+  .wrap:focus { outline: none; }
+  .wrap > :first-child { margin-top: auto; }
+  .wrap > :last-child { margin-bottom: auto; }
+
+  .lead { max-width: 34ch; font-size: clamp(1.05rem, 3.6vw, 1.25rem); line-height: 1.55; opacity: .93; }
+  .date { font-family: var(--display); font-style: italic; font-size: 1.1rem; opacity: .85; }
+
+  .btn {
+    font: inherit; font-weight: 600; font-size: 1.05rem; border: 0; cursor: pointer;
+    padding: .95rem 1.9rem; border-radius: 999px; margin-top: .5rem;
+    transition: transform .2s ease, box-shadow .2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-light { background: #fff; color: var(--red-lo); box-shadow: 0 14px 26px -14px rgba(0, 0, 0, .55); }
+  .btn-red   { background: var(--red); color: #fff; box-shadow: 0 14px 26px -12px var(--red); }
+  .btn.pulse { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+  .back {
+    position: absolute; z-index: 5;
+    top: calc(env(safe-area-inset-top, 0px) + .8rem); left: .8rem;
+    background: none; border: 0; color: inherit; opacity: .75; font: inherit; font-size: .95rem;
+    padding: .5rem .7rem; cursor: pointer;
+  }
+  .back:hover { opacity: 1; }
+
+  .pg {
+    position: absolute; left: 50%; transform: translateX(-50%); z-index: 5;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+    display: flex; gap: 6px; align-items: center; pointer-events: none; transition: opacity .4s;
+  }
+  .pg span { width: 6px; height: 6px; border-radius: 6px; background: currentColor; opacity: .28; }
+  .pg span.on { opacity: .9; }
+  .pg span.cur { width: 20px; opacity: 1; }
+
+  /* entrada escalonada de cada pantalla */
+  .rise { opacity: 0; }
+  .scene.in .rise { animation: rise .9s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--d, 0) * 130ms + 350ms); }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Portón ---------- */
+  .door {
+    position: absolute; top: 0; bottom: 0; width: 50%; overflow: hidden;
+    background:
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, .05) 0 2px, transparent 2px 46px),
+      linear-gradient(180deg, #6E0A16, var(--wine) 60%, var(--wine-lo));
+    transition: transform 1.25s cubic-bezier(.7, 0, .2, 1);
+  }
+  .door-l { left: 0; border-right: 1px solid rgba(255, 255, 255, .35); }
+  .door-r { right: 0; border-left: 1px solid rgba(255, 255, 255, .35); }
+  .door svg { position: absolute; top: 11%; width: 84px; fill: none; stroke: #fff; stroke-width: 3; opacity: .9; }
+  .door-l svg { right: -42px; }
+  .door-r svg { left: -42px; }
+  .gate-content { z-index: 2; transition: opacity .5s ease, transform 1s ease; }
+  .s-gate.opening .door-l { transform: translateX(-101%); }
+  .s-gate.opening .door-r { transform: translateX(101%); }
+  .s-gate.opening .gate-content, .s-gate.opening .pg { opacity: 0; }
+  .s-gate.opening .gate-content { transform: scale(1.06); pointer-events: none; }
+  @media (max-height: 640px) { .door svg { display: none; } }
+
+  /* ---------- Rosa ---------- */
+  .rose { display: block; width: 100%; height: 100%; overflow: visible; }
+  .rose circle { stroke: var(--edge, rgba(90, 8, 18, .35)); stroke-width: 1.6; transition: fill .6s ease; }
+  .rose .l1 circle { fill: var(--p1); }
+  .rose .l2 circle { fill: var(--p2); }
+  .rose .l3 circle { fill: var(--p3); }
+  .rose .l4 circle { fill: var(--p4); }
+  .rose .swirl { fill: none; stroke: var(--edge, rgba(90, 8, 18, .35)); stroke-width: 2; stroke-linecap: round; }
+
+  .rose-btn { background: none; border: 0; padding: 0; cursor: pointer; width: min(66vw, 280px); aspect-ratio: 1; position: relative; -webkit-tap-highlight-color: transparent; }
+  .rose-btn::before {
+    content: ""; position: absolute; inset: -22%; border-radius: 50%;
+    background: radial-gradient(circle, var(--blush) 0%, transparent 68%);
+  }
+  .hero-rose { --p1: #E63946; --p2: #D62839; --p3: #C1121F; --p4: #A00E1B; position: relative; filter: drop-shadow(0 18px 22px rgba(151, 9, 26, .35)); }
+  .hero-rose .layer { transform-origin: 100px 100px; }
+  .scene.in .hero-rose .layer { animation: unfurl 1.4s cubic-bezier(.2, .9, .3, 1.12) both; animation-delay: calc((3 - var(--i)) * .24s + .5s); }
+  @keyframes unfurl { from { transform: scale(0) rotate(-55deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+
+  /* ---------- Contador ---------- */
+  .beat { width: 96px; color: #fff; animation: beat 1.5s ease-in-out infinite; filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .3)); }
+  @keyframes beat { 0%, 100% { transform: scale(1); } 14% { transform: scale(1.2); } 28% { transform: scale(1); } 42% { transform: scale(1.13); } 70% { transform: scale(1); } }
+  .days { font-family: var(--display); font-weight: 600; font-size: clamp(5rem, 26vw, 10rem); line-height: .95; font-variant-numeric: tabular-nums; }
+  .days-label { font-family: var(--display); font-style: italic; font-size: 1.7rem; margin-top: -.6rem; }
+  .live { font-variant-numeric: tabular-nums; opacity: .9; max-width: 30ch; }
+
+  /* ---------- Rosas (razones) ---------- */
+  .garden { display: grid; grid-template-columns: repeat(4, minmax(0, 84px)); gap: .5rem .6rem; justify-content: center; }
+  .rbtn {
+    --p1: #FFD3D8; --p2: #FFC0C8; --p3: #FFAAB5; --p4: #FF94A2; --edge: rgba(193, 18, 31, .28);
+    background: none; border: 0; padding: 0; cursor: pointer; aspect-ratio: 1; width: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .rbtn svg { transform: scale(.62); transition: transform .7s cubic-bezier(.2, .9, .3, 1.3), filter .4s; }
+  .rbtn:hover svg { transform: scale(.72); }
+  .rbtn.on { cursor: default; --p1: #E63946; --p2: #D62839; --p3: #C1121F; --p4: #A00E1B; --edge: rgba(90, 8, 18, .35); }
+  .rbtn.on:nth-child(even) { --p1: #FFFFFF; --p2: #FFF3F5; --p3: #FFE6EA; --p4: #FFD3DA; --edge: rgba(193, 18, 31, .5); }
+  .rbtn.on svg { transform: scale(1.02); filter: drop-shadow(0 5px 7px rgba(151, 9, 26, .35)); }
+  .reason {
+    font-family: var(--display); font-style: italic; font-size: clamp(1.3rem, 4.8vw, 1.8rem); line-height: 1.3;
+    min-height: 5.2em; max-width: 24ch; display: flex; align-items: center; justify-content: center;
+  }
+  .reason.swap { animation: swap .6s ease both; }
+  @keyframes swap { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .count { font-size: .95rem; opacity: .75; }
+
+  /* ---------- Momentos ---------- */
+  .orn { width: 30px; opacity: .85; }
+  .s-white .orn { color: var(--red); }
+  .moment h2 { max-width: 15ch; }
+
+  /* ---------- Carta ---------- */
+  .paper {
+    background: #FFFDF8; color: #4A0B14; text-align: left; max-width: 560px; width: 100%;
+    border-radius: 4px 22px 4px 22px; padding: clamp(1.4rem, 5vw, 2.2rem);
+    box-shadow: 0 24px 44px -24px rgba(0, 0, 0, .6); transform: rotate(-.5deg);
+  }
+  .s-white .paper { border: 1px solid rgba(193, 18, 31, .25); }
+  .paper h2 { font-family: var(--hand); font-style: normal; font-weight: 600; font-size: clamp(2.1rem, 8vw, 2.8rem); max-width: none; margin-bottom: .6rem; color: #C1121F; }
+  .paper p { font-family: var(--hand); font-size: clamp(1.35rem, 4.6vw, 1.7rem); line-height: 1.4; margin-bottom: .8rem; }
+  .paper .sign { text-align: right; color: #C1121F; margin: 1rem 0 0; font-size: clamp(1.6rem, 5.4vw, 2rem); }
+
+  /* ---------- Final ---------- */
+  .ask { display: flex; flex-direction: column; align-items: center; gap: 1.6rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: center; min-height: 120px; position: relative; }
+  .btn-no { background: transparent; color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .5); transition: transform .35s cubic-bezier(.3, 1.4, .5, 1); }
+  .final-msg { display: none; flex-direction: column; align-items: center; gap: 1.1rem; }
+  .said .ask { display: none; }
+  .said .final-msg { display: flex; }
+  .big-love { font-family: var(--display); font-style: italic; font-weight: 600; font-size: clamp(4.5rem, 22vw, 9.5rem); line-height: 1; animation: beat 1.5s ease-in-out infinite; text-shadow: 0 12px 40px rgba(255, 60, 90, .55); }
+
+  /* ---------- Escena 3D ---------- */
+  [hidden] { display: none !important; }
+  #petals { transition: opacity .6s ease; }
+  .stage3d { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; display: block; }
+  .stage3d:active { cursor: grabbing; }
+  .title3d {
+    position: absolute; z-index: 2; left: 0; right: 0; text-align: center; padding: 0 1.2rem; pointer-events: none;
+    top: calc(env(safe-area-inset-top, 0px) + 3.6rem);
+    font-family: var(--display); font-style: italic; font-size: clamp(1.15rem, 4.4vw, 1.5rem); color: #FFE680;
+    text-shadow: 0 2px 14px rgba(40, 0, 8, .7);
+  }
+  .hint3d {
+    position: absolute; z-index: 3; left: 50%; transform: translateX(-50%); pointer-events: none;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 3rem);
+    max-width: 88vw; text-align: center; font-size: .95rem; color: #fff;
+    background: rgba(40, 0, 8, .4); padding: .55rem 1.1rem; border-radius: 999px;
+    transition: opacity 1.2s ease;
+  }
+  .hint3d.gone { opacity: 0; }
+  .gyro-btn { position: absolute; z-index: 4; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 5.6rem); white-space: nowrap; font-size: .95rem; padding: .7rem 1.3rem; }
+  .gyro-btn:hover { transform: translateX(-50%) translateY(-2px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rise { opacity: 1; }
+    .scene.in .rise, .scene.in .hero-rose .layer, .reason.swap { animation: none; }
+    .beat, .big-love, .btn.pulse { animation: none; }
+    .door, .gate-content, .rbtn svg, .btn, .btn-no { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<canvas id="petals" aria-hidden="true"></canvas>
+
+<script>
+/* =====================================================
+   EDITA AQUÍ: todo lo personal está en este bloque
+   ===================================================== */
+const CONFIG = {
+  ella: "Mi amor",                 // Su nombre o apodo
+  el: "Alexander",                 // Tu nombre (firma de la carta)
+  inicio: "2026-08-28",            // Fecha en que empezaron (AAAA-MM-DD)
+
+  razones: [
+    "Tu sonrisa, que arregla hasta los días más pesados.",
+    "Cómo me escuchas, como si nada más existiera.",
+    "Que contigo hasta lo más simple se vuelve mi lugar favorito.",
+    "Que creas en mí incluso cuando yo dudo.",
+    "Tus abrazos: mi lugar favorito del mundo.",
+    "Cómo te emocionas con las cosas pequeñas.",
+    "Quiero ser mejor sin que me lo pidas.",
+    "Que quiero un futuro contigo y solo contigo."
+  ],
+
+  momentos: [
+    { cuando: "El día que nos conocimos", titulo: "Ahí empezó todo", texto: "Todavía me acuerdo de lo nervioso que estaba por solo hablarte. No sabía que ese día iba a cambiarme la vida." },
+    { cuando: "Nuestra primera salida", titulo: "Un plan que no fue cualquiera", texto: "Resultó ser la primera de todas las que quiero repetir contigo." },
+    { cuando: "Cuando me declare", titulo: "El mejor dia de mi vida", texto: "Un poco nervioso la verdad pero listo para decirte lo que siento por ti y esperando el si cuando te dije ¿quieres ser mi novia?" },
+    { cuando: "Hoy, 21 de septiembre", titulo: "Y seguimos creciendo como pareja", texto: "Nuestra primera primavera e hice todo lo posible para que sea bonito para ti." }
+  ],
+
+  cartaTitulo: "Para ti",
+  carta: [
+    "No sé en qué momento pasó, pero un día me di cuenta de que tu nombre ya vivía en todos mis pensamientos.",
+    "Contigo aprendí que amar es lo cotidiano: tu mensaje en la mañana, tu sonrisa cada vez que te veo y me enamoro mas, tu abrazo cuando todo me pesa.",
+    "Hoy 21 de septiembre pudimos superar obstaculos y crecer como pareja. Te elijo hoy, mañana y todos los días para seguir amandote una y mil e infinitas veces solo a ti ♡♡♡.",
+    "Gracias por existir, gracias por amarme, gracias por ser tú."
+  ],
+  firma: "Con todo mi amor",
+
+  // Frases que flotan en el jardín 3D (cortas, se ven mejor así)
+  frases: [
+    "Te amo",
+    "Eres mi novia",
+    "Contigo todo me inspira",
+    "Mi lugar favorito eres tú",
+    "Eres mi amor",
+    "Gracias por existir",
+    "Siempre tú",
+    "Mi persona favorita",
+    "Eres mi todo",
+    "Contigo, todos los días",
+    "Mi flor amarilla",
+    "Me haces feliz",
+    "Eres mi niña bonita",
+    "Hoy y siempre contigooo",
+    "Eres mi vida",
+    "Todo mi amor es tuyo"
+  ]
+};
+/* ===================================================== */
+
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const app = document.getElementById("app");
+const scenes = [];
+let idx = 0, busy = false;
+const PAL = ["#C1121F", "#F0516A", "#FFC4CC", "#FFFFFF", "#E63946"];
+
+const HEART = "M50 86 C10 56 0 34 0 22 C0 8 12 0 26 0 C36 0 46 6 50 14 C54 6 64 0 74 0 C88 0 100 8 100 22 C100 34 90 56 50 86Z";
+const heart = (cls) => '<svg class="' + cls + '" viewBox="0 0 100 90" aria-hidden="true"><path d="' + HEART + '" fill="currentColor"/></svg>';
+const lockHeart = '<svg viewBox="0 0 100 90" aria-hidden="true"><path d="' + HEART + '"/></svg>';
+
+function rose(cls) {
+  const L = [{ n: 5, r: 44, d: 38, rot: -90 }, { n: 5, r: 36, d: 26, rot: -54 }, { n: 5, r: 27, d: 15, rot: -78 }, { n: 4, r: 18, d: 8, rot: -40 }];
+  let s = '<svg class="rose ' + (cls || "") + '" viewBox="0 0 200 200" aria-hidden="true">';
+  L.forEach((l, i) => {
+    s += '<g class="layer l' + (i + 1) + '" style="--i:' + i + '">';
+    for (let k = 0; k < l.n; k++) {
+      const a = (l.rot + k * 360 / l.n) * Math.PI / 180;
+      s += '<circle cx="' + (100 + l.d * Math.cos(a)).toFixed(1) + '" cy="' + (100 + l.d * Math.sin(a)).toFixed(1) + '" r="' + l.r + '"/>';
+    }
+    s += '</g>';
+  });
+  return s + '<path class="swirl" d="M100 100 m-9 0 a9 9 0 1 1 9 9 a5 5 0 1 1 -5 -5"/></svg>';
+}
+
+function mk(theme, extra, html) {
+  const s = document.createElement("section");
+  s.className = "scene s-" + theme + " " + (extra || "");
+  s.innerHTML = html;
+  app.appendChild(s);
+  scenes.push(s);
+  return s;
+}
+const txt = (root, sel, t) => { root.querySelector(sel).textContent = t; };
+
+/* ---------- 0. Portón ---------- */
+const s0 = mk("gate", "",
+  '<div class="door door-l">' + lockHeart + '</div><div class="door door-r">' + lockHeart + '</div>' +
+  '<div class="wrap gate-content">' +
+    '<p class="date rise">21 de septiembre de 2026</p>' +
+    '<h1 class="rise" data-t></h1>' +
+    '<p class="lead rise">Cada rincón guarda algo de lo que siento por ti. Recórrelo con calma, de la mano de mi corazón.</p>' +
+    '<button class="btn btn-light rise" type="button" data-gate>Abrir el portón</button>' +
+  '</div>');
+txt(s0, "[data-t]", "Espero te guste para ti, " + CONFIG.ella);
+
+/* ---------- 1. Rosa ---------- */
+const s1 = mk("white", "",
+  '<div class="wrap">' +
+    '<button class="rose-btn" type="button" data-rose aria-label="Rosa. Tócala para que caigan pétalos">' + rose("hero-rose") + '</button>' +
+    '<h2 class="rise" data-t></h2>' +
+    '<p class="lead rise">Llego 21 de septiembre, pero tú eres la razón por la que mejoro cada dia por ser tu mejor novio tambien.</p>' +
+    '<button class="btn btn-red rise" type="button" data-next>Seguir el camino</button>' +
+  '</div>');
+txt(s1, "[data-t]", "Feliz 21 de septiembre, " + CONFIG.ella);
+
+/* ---------- 2. Tiempo ---------- */
+const start = new Date(CONFIG.inicio + "T00:00:00");
+const longDate = isNaN(start) ? "primer día" : start.toLocaleDateString("es", { day: "numeric", month: "long", year: "numeric" });
+const s2 = mk("red", "",
+  '<div class="wrap">' +
+    heart("beat") +
+    '<p class="lead rise" data-since></p>' +
+    '<div class="days rise" data-days>0</div>' +
+    '<div class="days-label rise">días juntos</div>' +
+    '<p class="live rise" data-live></p>' +
+    '<button class="btn btn-light rise" type="button" data-next>Seguir</button>' +
+  '</div>');
+txt(s2, "[data-since]", "Desde el " + longDate + ", mi corazón te eligio a ti.");
+function tick() {
+  let diff = Date.now() - start.getTime();
+  if (isNaN(diff) || diff < 0) diff = 0;
+  const sec = Math.floor(diff / 1000);
+  const d = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+  s2.querySelector("[data-days]").textContent = d.toLocaleString("es");
+  s2.querySelector("[data-live]").textContent = "y " + h + (h === 1 ? " hora, " : " horas, ") + m + (m === 1 ? " minuto y " : " minutos y ") + s + (s === 1 ? " segundo" : " segundos") + " de los que no cambiaría ni uno.";
+}
+tick(); setInterval(tick, 1000);
+
+/* ---------- 3. Rosas del camino ---------- */
+const s3 = mk("white", "",
+  '<div class="wrap">' +
+    '<h2 class="rise">Las rosas del camino</h2>' +
+    '<p class="lead rise">Cada una guarda una razón por la que te amo. Ábrelas todas.</p>' +
+    '<div class="garden rise" data-garden></div>' +
+    '<p class="reason" data-reason aria-live="polite">Toca una rosa para abrirla.</p>' +
+    '<p class="count" data-count></p>' +
+    '<button class="btn btn-red rise" type="button" data-next>Seguir</button>' +
+  '</div>');
+let opened = 0;
+const total = CONFIG.razones.length;
+const reasonEl = s3.querySelector("[data-reason]");
+const countEl = s3.querySelector("[data-count]");
+function showCount() { countEl.textContent = opened + " de " + total + " rosas abiertas"; }
+showCount();
+CONFIG.razones.forEach((t, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "rbtn";
+  b.setAttribute("aria-label", "Rosa " + (i + 1) + ", toca para abrir");
+  b.innerHTML = rose("");
+  b.addEventListener("click", () => {
+    if (!b.classList.contains("on")) {
+      b.classList.add("on"); opened++; showCount();
+      const r = b.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + r.height / 2, 12, false);
+    }
+    reasonEl.textContent = t;
+    reasonEl.classList.remove("swap"); void reasonEl.offsetWidth; reasonEl.classList.add("swap");
+    if (opened === total) {
+      countEl.textContent = "Y aun así me quedan mil razones más.";
+      s3.querySelector("[data-next]").classList.add("pulse");
+      burst(innerWidth / 2, innerHeight * 0.6, 70, true);
+    }
+  });
+  s3.querySelector("[data-garden]").appendChild(b);
+});
+
+/* ---------- 4+. Momentos ---------- */
+CONFIG.momentos.forEach((m, i) => {
+  const theme = i % 2 === 0 ? "red" : "white";
+  const s = mk(theme, "moment",
+    '<div class="wrap">' +
+      heart("orn rise") +
+      '<p class="date rise" data-when></p>' +
+      '<h2 class="rise" data-t></h2>' +
+      '<p class="lead rise" data-p></p>' +
+      '<button class="btn ' + (theme === "red" ? "btn-light" : "btn-red") + ' rise" type="button" data-next>Seguir</button>' +
+    '</div>');
+  txt(s, "[data-when]", m.cuando);
+  txt(s, "[data-t]", m.titulo);
+  txt(s, "[data-p]", m.texto);
+});
+
+/* ---------- Carta ---------- */
+const letterTheme = scenes[scenes.length - 1].classList.contains("s-red") ? "white" : "red";
+const s5 = mk(letterTheme, "",
+  '<div class="wrap">' +
+    '<article class="paper rise">' +
+      '<h2 data-t></h2><div data-body></div><p class="sign" data-sign></p>' +
+    '</article>' +
+    '<button class="btn ' + (letterTheme === "red" ? "btn-light" : "btn-red") + ' rise" type="button" data-next>Seguir</button>' +
+  '</div>');
+txt(s5, "[data-t]", CONFIG.cartaTitulo + ", " + CONFIG.ella);
+CONFIG.carta.forEach((t) => { const p = document.createElement("p"); p.textContent = t; s5.querySelector("[data-body]").appendChild(p); });
+txt(s5, "[data-sign]", CONFIG.firma + ", " + CONFIG.el);
+
+/* ---------- Final ---------- */
+const s6 = mk("wine", "",
+  '<div class="wrap">' +
+    '<div class="ask">' +
+      '<h2 class="rise">¿Quieres continuar conmigo?</h2>' +
+      '<div class="actions rise" data-actions>' +
+        '<button class="btn btn-light" type="button" data-yes>Sí, siempre</button>' +
+        '<button class="btn btn-no" type="button" data-no>Déjame pensarlo</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="final-msg">' +
+      '<div class="big-love">Te amo</div>' +
+      '<p class="lead" data-fm></p>' +
+      '<button class="btn btn-light" type="button" data-more>Un regalo más</button>' +
+    '</div>' +
+  '</div>');
+txt(s6, "[data-fm]", "Feliz 21 de septiembre, " + CONFIG.ella + ". Gracias por aceptarme tal como soy (con eso me hiciste muy feliz), por hacerme tan feliz y por ser mi novia. Te amo hoy, mañana y siempre.");
+
+/* ---------- Jardín 3D (última pantalla) ---------- */
+const s7 = mk("wine", "stage",
+  '<canvas class="stage3d" data-c role="img" aria-label="Jardín en 3D con flores amarillas y frases. Desliza o mueve el celular para mirar alrededor, pellizca con dos dedos para hacer zoom."></canvas>' +
+  '<p class="title3d rise" data-t></p>' +
+  '<p class="hint3d" data-hint>Mueve tu celular o desliza para mirar · pellizca para zoom</p>' +
+  '<button class="btn btn-light gyro-btn" type="button" data-gyro hidden>Activar giro con el celular</button>');
+txt(s7, "[data-t]", "Todo esto es para ti, " + CONFIG.ella);
+
+/* ---------- Decoración común: atrás, progreso, escalonado ---------- */
+scenes.forEach((s, i) => {
+  if (i > 0) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "back"; b.textContent = "‹ Atrás";
+    b.addEventListener("click", () => goTo(i - 1));
+    s.appendChild(b);
+  }
+  const pg = document.createElement("div");
+  pg.className = "pg"; pg.setAttribute("aria-hidden", "true");
+  scenes.forEach((_, j) => { const d = document.createElement("span"); d.className = j === i ? "cur" : (j < i ? "on" : ""); pg.appendChild(d); });
+  s.appendChild(pg);
+  s.querySelectorAll(".rise").forEach((el, k) => el.style.setProperty("--d", k));
+  const w = s.querySelector(".wrap"); if (w) w.tabIndex = -1;
+  s.querySelectorAll("[data-next]").forEach((b) => b.addEventListener("click", (e) => {
+    const r = b.getBoundingClientRect();
+    goTo(i + 1, { x: r.left + r.width / 2, y: r.top + r.height / 2 });
+  }));
+});
+
+/* ---------- Navegación ---------- */
+function enter(n) {
+  const s = scenes[n];
+  s.classList.add("active", "in");
+  if (n === scenes.length - 1) start3d();
+}
+function finish(n) {
+  scenes.forEach((s, i) => { if (i !== n) { s.classList.remove("active", "in", "opening"); s.style.zIndex = ""; s.style.clipPath = ""; s.style.webkitClipPath = ""; s.style.transition = ""; } });
+  const s = scenes[n];
+  s.style.zIndex = ""; s.style.clipPath = ""; s.style.webkitClipPath = ""; s.style.transition = "";
+  idx = n; busy = false;
+  cv.style.opacity = n === scenes.length - 1 ? "0" : "1";
+  if (n !== scenes.length - 1) stop3d();
+  const w = s.querySelector(".wrap"); if (w) w.focus({ preventScroll: true });
+}
+function goTo(n, origin) {
+  if (busy || n === idx || n < 0 || n >= scenes.length) return;
+  if (idx === 0 && n === 1) return openGate();
+  busy = true;
+  const to = scenes[n], from = scenes[idx];
+  if (reduce) { enter(n); return finish(n); }
+  const x = origin ? origin.x : innerWidth / 2;
+  const y = origin ? origin.y : innerHeight * 0.85;
+  const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 30;
+  from.style.zIndex = 2; to.style.zIndex = 3;
+  const start = "circle(0px at " + x + "px " + y + "px)";
+  to.style.clipPath = start; to.style.webkitClipPath = start;
+  enter(n);
+  void to.offsetWidth;
+  to.style.transition = "clip-path .95s cubic-bezier(.65,0,.25,1), -webkit-clip-path .95s cubic-bezier(.65,0,.25,1)";
+  const endc = "circle(" + R + "px at " + x + "px " + y + "px)";
+  to.style.clipPath = endc; to.style.webkitClipPath = endc;
+  setTimeout(() => finish(n), 1000);
+}
+function openGate() {
+  busy = true;
+  const g = scenes[0];
+  if (reduce) { enter(1); return finish(1); }
+  scenes[1].style.zIndex = 1; g.style.zIndex = 2;
+  enter(1);
+  g.classList.add("opening");
+  setTimeout(() => finish(1), 1350);
+}
+s0.querySelector("[data-gate]").addEventListener("click", () => goTo(1));
+s1.querySelector("[data-rose]").addEventListener("click", (e) => {
+  const r = e.currentTarget.getBoundingClientRect();
+  burst(r.left + r.width / 2, r.top + r.height / 2, 45, true);
+});
+addEventListener("keydown", (e) => {
+  if (run3d) {
+    if (e.key === "ArrowRight") dragYaw += 0.2;
+    if (e.key === "ArrowLeft") dragYaw -= 0.2;
+    if (e.key === "ArrowUp") dragPit += 0.15;
+    if (e.key === "ArrowDown") dragPit -= 0.15;
+    if (e.key === "+" || e.key === "=") tgtZoom = clamp(tgtZoom * 1.15, 0.45, 2.6);
+    if (e.key === "-" || e.key === "_") tgtZoom = clamp(tgtZoom * 0.87, 0.45, 2.6);
+    return;
+  }
+  if (e.key === "ArrowRight") goTo(idx + 1);
+  if (e.key === "ArrowLeft") goTo(idx - 1);
+});
+let tx = 0, ty = 0;
+addEventListener("touchstart", (e) => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+addEventListener("touchend", (e) => {
+  const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (idx === scenes.length - 1) return;
+  if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) goTo(idx + (dx < 0 ? 1 : -1));
+}, { passive: true });
+
+/* ---------- Final: sí / botón que se escapa ---------- */
+s6.querySelector("[data-yes]").addEventListener("click", (e) => {
+  const r = e.currentTarget.getBoundingClientRect();
+  s6.classList.add("said");
+  burst(r.left + r.width / 2, r.top + r.height / 2, 130, true);
+  setTimeout(() => burst(innerWidth * 0.25, innerHeight * 0.4, 60, true), 350);
+  setTimeout(() => burst(innerWidth * 0.75, innerHeight * 0.4, 60, true), 650);
+});
+const noBtn = s6.querySelector("[data-no]");
+function dodge(e) {
+  e.preventDefault();
+  const w = Math.min(s6.querySelector("[data-actions]").getBoundingClientRect().width, 280);
+  noBtn.style.transform = "translate(" + ((Math.random() - 0.5) * w) + "px," + ((Math.random() - 0.5) * 110) + "px)";
+}
+noBtn.addEventListener("pointerenter", dodge);
+noBtn.addEventListener("click", dodge);
+s6.querySelector("[data-more]").addEventListener("click", (e) => {
+  askMotion();                       // pide permiso del giroscopio (iPhone) dentro del toque
+  const r = e.currentTarget.getBoundingClientRect();
+  goTo(idx + 1, { x: r.left + r.width / 2, y: r.top + r.height / 2 });
+});
+
+/* ---------- Pétalos y corazones (canvas) ---------- */
+const cv = document.getElementById("petals"), ctx = cv.getContext("2d");
+let W = 0, H = 0, parts = [];
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+resize(); addEventListener("resize", resize);
+
+function ambient(fresh) {
+  return { x: Math.random() * W, y: fresh ? Math.random() * H : -20, s: 6 + Math.random() * 7,
+    vx: -0.15 + Math.random() * 0.5, vy: 0.35 + Math.random() * 0.55, r: Math.random() * 6.28,
+    vr: (Math.random() - 0.5) * 0.03, c: PAL[Math.floor(Math.random() * PAL.length)], a: 0.55,
+    burst: false, sway: Math.random() * 6.28, heart: false };
+}
+if (!reduce) for (let i = 0; i < 13; i++) parts.push(ambient(true));
+
+function burst(x, y, n, hearts) {
+  if (reduce) return;
+  for (let i = 0; i < n; i++) {
+    const ang = Math.random() * Math.PI * 2, sp = 2 + Math.random() * 5.5;
+    parts.push({ x, y, s: 7 + Math.random() * 9, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 2.5,
+      r: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.25, c: PAL[Math.floor(Math.random() * PAL.length)],
+      a: 1, burst: true, life: 90 + Math.random() * 70, sway: 0, heart: hearts && Math.random() < 0.45 });
+  }
+}
+function drawHeart(s) {
+  ctx.beginPath();
+  ctx.moveTo(0, s * 0.45);
+  ctx.bezierCurveTo(-s * 1.15, -s * 0.35, -s * 0.55, -s * 1.15, 0, -s * 0.4);
+  ctx.bezierCurveTo(s * 0.55, -s * 1.15, s * 1.15, -s * 0.35, 0, s * 0.45);
+  ctx.fill();
+}
+function frame() {
+  ctx.clearRect(0, 0, W, H);
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i];
+    if (p.burst) {
+      p.vy += 0.09; p.vx *= 0.99; p.life--; p.a = Math.max(0, Math.min(1, p.life / 40)); p.x += p.vx;
+      if (p.life <= 0 || p.y > H + 30) { parts.splice(i, 1); continue; }
+    } else {
+      p.sway += 0.02; p.x += p.vx + Math.sin(p.sway) * 0.4;
+      if (p.y > H + 20) { parts[i] = ambient(false); continue; }
+    }
+    p.y += p.vy; p.r += p.vr;
+    ctx.save();
+    ctx.translate(p.x, p.y); ctx.rotate(p.heart ? Math.sin(p.r) * 0.4 : p.r);
+    ctx.globalAlpha = p.a; ctx.fillStyle = p.c;
+    if (p.heart) drawHeart(p.s);
+    else { ctx.beginPath(); ctx.ellipse(0, 0, p.s * 0.5, p.s, 0, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  requestAnimationFrame(frame);
+}
+if (!reduce) requestAnimationFrame(frame);
+
+/* =====================================================
+   JARDÍN 3D (motor propio en canvas, sin librerías externas)
+   ===================================================== */
+const cv3 = s7.querySelector("[data-c]"), c3 = cv3.getContext("2d");
+const hint3 = s7.querySelector("[data-hint]"), gyroBtn = s7.querySelector("[data-gyro]");
+const FONT = '"Fraunces", Georgia, "Times New Roman", serif';
+let W3 = 0, H3 = 0, F = 500, Fbase = 500, run3d = false, t0 = 0, hintTimer = 0, zoom = 1, tgtZoom = 1;
+let yaw = 0, pit = 0, dragYaw = 0, dragPit = 0, vYaw = 0, vPit = 0;
+let gy = 0, gp = 0, lastA = null, gyroOn = false, dragging = false, lastTouch = 0, lx = 0, ly = 0;
+let cyw = 1, syw = 0, cpt = 1, spt = 0, vx = 0, vy = 0, vz = 0;
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+const smooth = (x) => { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); };
+const rnd = (a, b) => a + Math.random() * (b - a);
+
+/* cámara: mundo -> pantalla */
+function toCam(x, y, z) {
+  const x1 = x * cyw - z * syw, z1 = x * syw + z * cyw;
+  vx = x1; vy = y * cpt - z1 * spt; vz = y * spt + z1 * cpt;
+}
+function resize3d() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  W3 = cv3.clientWidth; H3 = cv3.clientHeight;
+  cv3.width = W3 * dpr; cv3.height = H3 * dpr;
+  c3.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c3.imageSmoothingEnabled = true;
+  if ("imageSmoothingQuality" in c3) c3.imageSmoothingQuality = "high";
+  Fbase = Math.min(H3 * 0.8, W3 * 1.3);
+}
+addEventListener("resize", () => { if (run3d) resize3d(); });
+
+/* brillos precalculados para las partículas amarillas */
+function makeGlow(rgb) {
+  const N = 64;
+  const c = document.createElement("canvas");
+  c.width = c.height = N;
+
+  const g = c.getContext("2d");
+  const r = N / 2;
+
+  const gr = g.createRadialGradient(r, r, 0, r, r, r);
+
+  // Núcleo muy definido
+  gr.addColorStop(0.00, "rgba(255,255,255,1)");
+  gr.addColorStop(0.10, "rgba(255,255,255,1)");
+  gr.addColorStop(0.18, "rgba(" + rgb + ",1)");
+
+  // Color sólido durante más superficie
+  gr.addColorStop(0.32, "rgba(" + rgb + ",1)");
+  gr.addColorStop(0.42, "rgba(" + rgb + ",0.9)");
+
+  // Halo mucho más pequeño
+  gr.addColorStop(0.55, "rgba(" + rgb + ",0.25)");
+  gr.addColorStop(0.68, "rgba(" + rgb + ",0)");
+  gr.addColorStop(1, "rgba(" + rgb + ",0)");
+
+  g.fillStyle = gr;
+  g.fillRect(0, 0, N, N);
+
+  return c;
+}
+
+const GLOW = [makeGlow("255,214,64"), makeGlow("255,243,176"), makeGlow("255,176,0")];
+
+/* ---- formas de partículas: corazón y flor ---- */
+const NP = 900;
+function heartPt() {
+  const t = Math.random() * 6.2832;
+  const hx = 16 * Math.pow(Math.sin(t), 3);
+  const hy = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+  const s = Math.random() < 0.7 ? 0.9 + 0.1 * Math.random() : Math.sqrt(Math.random());
+  const k = 0.105;
+  const z = (Math.random() - 0.5) * 2 * Math.sqrt(Math.max(0, 1.05 - s * s)) * 0.6;
+  return [hx * s * k, (hy * s + 2.5) * k, z];
+}
+function flowerPt() {
+  const r = Math.random(); let x, y, z;
+  if (r < 0.26) {                                   // centro del girasol
+    const rad = Math.sqrt(Math.random()) * 0.48, a = Math.random() * 6.2832;
+    x = Math.cos(a) * rad; y = Math.sin(a) * rad; z = -0.14 * (1 - (rad / 0.48) * (rad / 0.48));
+  } else if (r < 0.82) {                            // 12 pétalos
+    const p = Math.floor(Math.random() * 12), u = Math.random();
+    const along = 0.55 + 0.95 * u;
+    const wid = 0.3 * Math.pow(Math.sin(Math.PI * clamp(u * 0.94 + 0.03, 0, 1)), 0.8);
+    const edge = Math.random() < 0.55;
+    const side = (edge ? (Math.random() < 0.5 ? -1 : 1) * (0.8 + 0.2 * Math.random()) : (Math.random() * 2 - 1)) * wid;
+    const a = p * 6.2832 / 12;
+    x = Math.cos(a) * along - Math.sin(a) * side; y = Math.sin(a) * along + Math.cos(a) * side; z = -0.3 * u * u;
+  } else if (r < 0.93) {                            // tallo
+    const yy = -1.5 - Math.random() * 0.9;
+    x = 0.05 * Math.sin(yy * 2.5); y = yy; z = 0.05;
+  } else {                                          // hojas
+    const sg = Math.random() < 0.5 ? -1 : 1, u = Math.random(), w = 0.13 * Math.sin(Math.PI * u) * (Math.random() * 2 - 1);
+    x = sg * 0.7 * u; y = -1.75 + 0.35 * u + w; z = 0.05;
+  }
+  return [x * 0.8, y * 0.8 + 0.37, z * 0.8];
+}
+function makeCloud(startHeart) {
+  const c = { P0: new Float32Array(NP * 3), P1: new Float32Array(NP * 3), dl: new Float32Array(NP), rv: new Float32Array(NP * 3),
+    col: new Uint8Array(NP), sz: new Float32Array(NP), ph: new Float32Array(NP) };
+  for (let i = 0; i < NP; i++) {
+    const h = heartPt(), f = flowerPt(), a = startHeart ? h : f, b = startHeart ? f : h;
+    for (let k = 0; k < 3; k++) { c.P0[i * 3 + k] = a[k]; c.P1[i * 3 + k] = b[k]; }
+    c.dl[i] = Math.random();
+    c.rv[i * 3] = rnd(-0.9, 0.9); c.rv[i * 3 + 1] = rnd(-0.9, 0.9); c.rv[i * 3 + 2] = rnd(-0.6, 0.6);
+    c.col[i] = Math.random() < 0.6 ? 0 : (Math.random() < 0.5 ? 1 : 2);
+    c.sz[i] = 0.034 + Math.random() * 0.045;
+    c.ph[i] = Math.random() * 6.2832;
+  }
+  return c;
+}
+const cloudL = makeCloud(true);    // empieza corazón -> flor
+const cloudR = makeCloud(false);   // empieza flor -> corazón
+const FIG = { z: 5.4, x: 1.2, y: 0.1, sc: 0.85 };
+function morphAt(t) {
+  const p = (t % 10) / 10;
+  if (p < 0.25) return 0;
+  if (p < 0.5) return smooth((p - 0.25) / 0.25);
+  if (p < 0.75) return 1;
+  return 1 - smooth((p - 0.75) / 0.25);
+}
+function drawCloud(c, cx, cy, cz, m, t, ry) {
+  const cr = Math.cos(ry), sr = Math.sin(ry), SC = FIG.sc, hw = W3 / 2, hh = H3 / 2;
+  for (let i = 0; i < NP; i++) {
+    let l = m * 1.5 - c.dl[i] * 0.5; l = l < 0 ? 0 : l > 1 ? 1 : l; l = l * l * (3 - 2 * l);
+    const sw = Math.sin(Math.PI * l), j = i * 3;
+    let x = (c.P0[j] + (c.P1[j] - c.P0[j]) * l + c.rv[j] * sw) * SC;
+    let y = (c.P0[j + 1] + (c.P1[j + 1] - c.P0[j + 1]) * l + c.rv[j + 1] * sw) * SC + Math.sin(t * 1.4 + c.ph[i]) * 0.018;
+    let z = (c.P0[j + 2] + (c.P1[j + 2] - c.P0[j + 2]) * l + c.rv[j + 2] * sw) * SC;
+    const xr = x * cr + z * sr, zr = -x * sr + z * cr;
+    toCam(cx + xr, cy + y, cz + zr);
+    if (vz < 0.4) continue;
+    const k = F / vz, size = c.sz[i] * k * 1.3;
+    c3.globalAlpha = (0.62 + 0.38 * Math.sin(t * 2.6 + c.ph[i])) * clamp(1.4 - vz / 14, 0.4, 1);
+    c3.drawImage(GLOW[c.col[i]], hw + vx * k - size, hh - vy * k - size, size * 2, size * 2);
+  }
+}
+
+/* ---- flores amarillas alrededor (petalos en 3D real) ---- */
+const PS = [0, 0.25, 0.5, 0.75, 1, 0.75, 0.5, 0.25];
+const PW = [0.55, 0.95, 1, 0.7, 0, -0.7, -1, -0.95];
+const flowers = [];
+(function () {
+  let acc = 0;
+  for (let i = 0; acc < 16 && i < 400; i++) {
+    const dy = ((i * 0.61803398875) % 1) * 1.5 - 0.75, lon = i * 2.399963, hr = Math.sqrt(1 - dy * dy);
+    const dx = hr * Math.sin(lon), dz = hr * Math.cos(lon);
+    if (dz > 0.78 && Math.abs(dy) < 0.6) continue;                 // deja libre el frente para las figuras
+    const R = 7 + (acc % 3) * 1.5;
+    const px = dx * R, py = dy * R, pz = dz * R;
+    let N = [-px / R + rnd(-0.35, 0.35), -py / R + rnd(-0.35, 0.35), -pz / R + rnd(-0.35, 0.35)];
+    const nl = Math.hypot(N[0], N[1], N[2]); N = [N[0] / nl, N[1] / nl, N[2] / nl];
+    let Rr = [N[2], 0, -N[0]]; const rl = Math.hypot(Rr[0], Rr[1], Rr[2]) || 1; Rr = [Rr[0] / rl, 0, Rr[2] / rl];
+    const U = [N[1] * Rr[2] - N[2] * Rr[1], N[2] * Rr[0] - N[0] * Rr[2], N[0] * Rr[1] - N[1] * Rr[0]];
+    flowers.push({ x: px, y: py, z: pz, N, R: Rr, U, s: 0.62 + (acc % 5) * 0.13,
+      c1: ["#FFC81E", "#FFD23F", "#FFBE0B"][acc % 3], c2: ["#F29F05", "#F5A800"][acc % 2],
+      sp0: Math.random() * 6.28, spv: (acc % 2 ? 1 : -1) * rnd(0.08, 0.2), bf: rnd(0.5, 1), bp: Math.random() * 6.28 });
+    acc++;
+  }
+})();
+function drawFlower(f, t) {
+  const S = f.s, px = f.x, py = f.y + Math.sin(t * f.bf + f.bp) * 0.15, pz = f.z, hw = W3 / 2, hh = H3 / 2;
+  toCam(px, py, pz);
+  const dist = vz; if (dist < 0.8) return;
+  c3.globalAlpha = clamp(1.3 - dist / 17, 0.5, 1);
+  c3.strokeStyle = "rgba(120,60,0,.28)"; c3.lineWidth = 0.8;
+  const spin = f.sp0 + t * f.spv;
+  const layers = [[Math.PI / 12, 0.24, 0.56, 0.15, -0.02, f.c2], [0, 0.26, 0.64, 0.17, 0.05, f.c1]];
+  for (let li = 0; li < 2; li++) {
+    const L = layers[li];
+    c3.fillStyle = L[5];
+    for (let p = 0; p < 12; p++) {
+      const a = spin + L[0] + p * 0.5236, ca = Math.cos(a), sa = Math.sin(a);
+      c3.beginPath();
+      let ok = true;
+      for (let k = 0; k < 8; k++) {
+        const al = (L[1] + L[2] * PS[k]) * S, sd = PW[k] * L[3] * S;
+        const lx_ = al * ca - sd * sa, ly_ = al * sa + sd * ca, lz_ = (L[4] + 0.16 * PS[k] * PS[k] * L[2]) * S;
+        toCam(px + f.R[0] * lx_ + f.U[0] * ly_ + f.N[0] * lz_, py + f.R[1] * lx_ + f.U[1] * ly_ + f.N[1] * lz_, pz + f.R[2] * lx_ + f.U[2] * ly_ + f.N[2] * lz_);
+        if (vz < 0.3) { ok = false; break; }
+        const sx = hw + F * vx / vz, sy = hh - F * vy / vz;
+        if (k === 0) c3.moveTo(sx, sy); else c3.lineTo(sx, sy);
+      }
+      if (!ok) continue;
+      c3.closePath(); c3.fill(); c3.stroke();
+    }
+  }
+  const cent = [[0.31, "#5A0812", 0.04], [0.2, "#8E1424", 0.07]];
+  for (let ci = 0; ci < 2; ci++) {
+    c3.fillStyle = cent[ci][1]; c3.beginPath();
+    for (let k = 0; k < 14; k++) {
+      const a = k * 0.4488 + spin, lx_ = Math.cos(a) * cent[ci][0] * S, ly_ = Math.sin(a) * cent[ci][0] * S, lz_ = cent[ci][2] * S;
+      toCam(px + f.R[0] * lx_ + f.U[0] * ly_ + f.N[0] * lz_, py + f.R[1] * lx_ + f.U[1] * ly_ + f.N[1] * lz_, pz + f.R[2] * lx_ + f.U[2] * ly_ + f.N[2] * lz_);
+      const sx = hw + F * vx / Math.max(vz, 0.3), sy = hh - F * vy / Math.max(vz, 0.3);
+      if (k === 0) c3.moveTo(sx, sy); else c3.lineTo(sx, sy);
+    }
+    c3.closePath(); c3.fill();
+  }
+}
+
+/* ---- frases flotando ---- */
+const frasesList = CONFIG.frases.concat(["Feliz 21 de septiembre, " + CONFIG.ella]);
+const phrases = frasesList.map((t, i) => ({
+  t, yaw: 0.7 + (i + Math.random() * 0.5) * (6.2832 - 1.4) / frasesList.length,
+  pit: Math.sin(i * 2.1) * 0.42 + 0.08, r: 5.6 + (i % 4) * 0.9,
+  move: i % 3 === 1, bf: 0.6 + 0.2 * (i % 3), bp: i * 1.7, col: i % 2 ? "#FFF3B0" : "#FFFFFF"
+}));
+function phrasePos(p, t) {
+  let yw = p.yaw, by = 0;
+  if (p.move) { yw += Math.sin(t * 0.22 + p.bp) * 0.32; by = Math.sin(t * p.bf + p.bp) * 0.35; }   // solo algunas se mueven
+  const cp = Math.cos(p.pit);
+  return [p.r * cp * Math.sin(yw), p.r * Math.sin(p.pit) + by, p.r * cp * Math.cos(yw)];
+}
+function drawPhrase(p, t) {
+  const q = phrasePos(p, t);
+  toCam(q[0], q[1], q[2]);
+  if (vz < 0.8) return;
+  const k = F / vz, size = clamp(0.24 * k, 11, 28);
+  c3.globalAlpha = clamp(1.35 - vz / 13, 0.35, 1);
+  c3.font = "italic " + size + "px " + FONT; c3.fillStyle = p.col;
+  c3.shadowColor = "rgba(60,0,10,.75)"; c3.shadowBlur = 6;
+  c3.fillText(p.t, W3 / 2 + vx * k, H3 / 2 - vy * k);
+  c3.shadowBlur = 0;
+}
+
+/* ---- polvo dorado de fondo ---- */
+const dust = [];
+for (let i = 0; i < 220; i++) {
+  const a = Math.random() * 6.2832, b = Math.asin(rnd(-0.95, 0.95)), r = rnd(2.5, 12);
+  dust.push({ x: r * Math.cos(b) * Math.sin(a), y: r * Math.sin(b), z: r * Math.cos(b) * Math.cos(a), ph: Math.random() * 6.28, c: Math.random() < 0.75 ? 0 : 1, s: rnd(0.03, 0.07) });
+}
+
+/* ---- dibujo por cuadro ---- */
+function draw(now) {
+  const t = ((now - t0) / 1000) * (reduce ? 0.3 : 1);
+  if (!dragging) {
+    dragYaw += vYaw; dragPit += vPit; vYaw *= 0.93; vPit *= 0.93;
+    if (!gyroOn && !reduce && now - lastTouch > 3000) dragYaw += 0.0012;   // giro suave si no hay giroscopio
+  }
+  dragPit = clamp(dragPit, -1.1, 1.1);
+  yaw += (gy + dragYaw - yaw) * 0.18;
+  pit += (clamp(gp + dragPit, -1.25, 1.25) - pit) * 0.18;
+  cyw = Math.cos(yaw); syw = Math.sin(yaw); cpt = Math.cos(pit); spt = Math.sin(pit);
+  zoom += (tgtZoom - zoom) * 0.15;
+  F = Fbase * zoom;
+
+  c3.clearRect(0, 0, W3, H3);
+  c3.textAlign = "center"; c3.textBaseline = "middle";
+  const hw = W3 / 2, hh = H3 / 2;
+
+  // polvo + resplandor detrás de las figuras
+  c3.globalCompositeOperation = "lighter";
+  for (let i = 0; i < dust.length; i++) {
+    const d = dust[i];
+    toCam(d.x, d.y + Math.sin(t * 0.3 + d.ph) * 0.4, d.z);
+    if (vz < 0.5) continue;
+    const k = F / vz, size = d.s * k * 1.6;
+    c3.globalAlpha = (0.35 + 0.35 * Math.sin(t * 1.6 + d.ph)) * clamp(1.3 - vz / 14, 0.3, 1);
+    c3.drawImage(GLOW[d.c], hw + vx * k - size, hh - vy * k - size, size * 2, size * 2);
+  }
+  toCam(0, FIG.y, FIG.z);
+  if (vz > 0.5) {
+    const k = F / vz, cx = hw + vx * k, cy = hh - vy * k, R = 3 * k;
+    const g = c3.createRadialGradient(cx, cy, 0, cx, cy, R);
+    g.addColorStop(0, "rgba(255,190,60,.17)"); g.addColorStop(1, "rgba(255,190,60,0)");
+    c3.globalAlpha = 1; c3.fillStyle = g; c3.fillRect(cx - R, cy - R, R * 2, R * 2);
+  }
+  c3.globalCompositeOperation = "source-over";
+
+  // objetos ordenados de lejos a cerca
+  const items = [];
+  for (let i = 0; i < flowers.length; i++) { const f = flowers[i]; toCam(f.x, f.y, f.z); items.push({ z: vz, a: 0, o: f }); }
+  for (let i = 0; i < phrases.length; i++) { const q = phrasePos(phrases[i], t); toCam(q[0], q[1], q[2]); items.push({ z: vz, a: 1, o: phrases[i] }); }
+  toCam(-FIG.x, FIG.y, FIG.z); items.push({ z: vz, a: 2, o: cloudL });
+  toCam(FIG.x, FIG.y, FIG.z); items.push({ z: vz, a: 3, o: cloudR });
+  items.sort((p, q) => q.z - p.z);
+  const m = morphAt(t);
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i];
+    if (it.a === 0) drawFlower(it.o, t);
+    else if (it.a === 1) drawPhrase(it.o, t);
+    else {
+      c3.globalCompositeOperation = "lighter";
+      if (it.a === 2) drawCloud(cloudL, -FIG.x, FIG.y + Math.sin(t * 0.8) * 0.08, FIG.z, m, t, Math.sin(t * 0.5) * 0.7);
+      else drawCloud(cloudR, FIG.x, FIG.y + Math.sin(t * 0.8 + 1.5) * 0.08, FIG.z, m, t, Math.sin(t * 0.5 + 2) * 0.7);
+      c3.globalCompositeOperation = "source-over";
+    }
+  }
+  c3.globalAlpha = 1;
+}
+function loop(now) { if (!run3d) return; draw(now); requestAnimationFrame(loop); }
+
+/* ---- giroscopio del celular ---- */
+let orientAttached = false;
+function onOrient(e) {
+  if (e.alpha == null || e.beta == null) return;
+  gyroOn = true; gyroBtn.hidden = true;
+  if (lastA === null) lastA = e.alpha;
+  let d = e.alpha - lastA; d = ((d + 540) % 360) - 180;
+  gy += -d * Math.PI / 180; lastA = e.alpha;
+  gp = clamp((e.beta - 90) * Math.PI / 180, -1.25, 1.25);
+}
+function attachOrient() {
+  if (orientAttached) return;
+  orientAttached = true;
+  addEventListener("deviceorientation", onOrient, true);
+}
+function askMotion() {
+  try {
+    const D = window.DeviceOrientationEvent;
+    if (D && typeof D.requestPermission === "function") {
+      D.requestPermission().then((r) => { if (r === "granted") attachOrient(); }).catch(() => {});
+    } else if (D) attachOrient();
+  } catch (err) { /* sin giroscopio: se usa el dedo */ }
+}
+gyroBtn.addEventListener("click", askMotion);
+
+/* ---- arrastrar con el dedo o el mouse, y zoom con dos dedos o rueda ---- */
+const ZOOM_MIN = 0.45, ZOOM_MAX = 2.6;
+const pointers = new Map();
+let pinchDist = 0;
+function pinchGap() {
+  const p = [...pointers.values()];
+  return Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+}
+function pinchMid() {
+  const p = [...pointers.values()];
+  return { x: (p[0].x + p[1].x) / 2, y: (p[0].y + p[1].y) / 2 };
+}
+cv3.addEventListener("pointerdown", (e) => {
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  try { cv3.setPointerCapture(e.pointerId); } catch (err) {}
+  lastTouch = performance.now();
+  hint3.classList.add("gone");
+  if (pointers.size === 1) { dragging = true; lx = e.clientX; ly = e.clientY; vYaw = vPit = 0; }
+  else if (pointers.size === 2) { dragging = false; pinchDist = pinchGap(); }
+});
+cv3.addEventListener("pointermove", (e) => {
+  if (!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  lastTouch = performance.now();
+  if (pointers.size >= 2) {
+    const d = pinchGap();
+    if (pinchDist > 10) tgtZoom = clamp(tgtZoom * (d / pinchDist), ZOOM_MIN, ZOOM_MAX);
+    pinchDist = d;
+    return;
+  }
+  if (!dragging) return;
+  const dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
+  vYaw = -dx * 0.0055; vPit = dy * 0.0055; dragYaw += vYaw; dragPit += vPit;
+});
+function releasePointer(e) {
+  pointers.delete(e.pointerId);
+  lastTouch = performance.now();
+  if (pointers.size === 1) {
+    const [[, p]] = pointers; dragging = true; lx = p.x; ly = p.y;
+  } else if (pointers.size === 0) {
+    dragging = false;
+  }
+}
+["pointerup", "pointercancel", "pointerleave"].forEach((n) => cv3.addEventListener(n, releasePointer));
+cv3.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  tgtZoom = clamp(tgtZoom * (e.deltaY < 0 ? 1.08 : 0.92), ZOOM_MIN, ZOOM_MAX);
+  lastTouch = performance.now();
+  hint3.classList.add("gone");
+}, { passive: false });
+
+function start3d() {
+  if (run3d) return;
+  run3d = true; resize3d(); t0 = performance.now(); lastTouch = t0;
+  lastA = null; gy = 0; gp = 0; gyroOn = false; dragYaw = 0; dragPit = 0; yaw = 0; pit = 0; vYaw = 0; vPit = 0;
+  zoom = 1; tgtZoom = 1; pointers.clear(); dragging = false;
+  hint3.classList.remove("gone"); gyroBtn.hidden = true;
+  clearTimeout(hintTimer); hintTimer = setTimeout(() => hint3.classList.add("gone"), 8000);
+  setTimeout(() => { if (run3d && !gyroOn && matchMedia("(pointer: coarse)").matches) gyroBtn.hidden = false; }, 2500);
+  askMotion();
+  requestAnimationFrame(loop);
+}
+function stop3d() { run3d = false; }
+
+/* ---------- Arranque ---------- */
+enter(0);
+</script>
+</body>
+</html>
